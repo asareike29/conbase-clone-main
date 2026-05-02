@@ -133,7 +133,7 @@ export default function Footer() {
           }}
         >
           <p style={{ color: "#8a919e", fontSize: "13px", margin: 0 }}>
-            © 2024 Coinbase, Inc. All rights reserved.
+            © 2026 ConBase, Inc. Disclaimer: School project
           </p>
           <div style={{ display: "flex", gap: "24px" }}>
             {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((t) => (

@@ -1,6 +1,7 @@
 // pages/SignIn.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import DemoNotice from "../components/ui/DemoNotice";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export default function SignIn() {
       padding: "24px",
     }}>
       <div style={{ width: "100%", maxWidth: "440px" }}>
+
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
           <Link to="/">
@@ -83,8 +85,11 @@ export default function SignIn() {
           <h1 style={{ fontSize: "28px", fontWeight: 800, margin: "16px 0 8px", letterSpacing: "-0.02em" }}>
             Welcome back
           </h1>
-          <p style={{ color: "#8a919e", margin: 0, fontSize: "15px" }}>Sign in to your Coinbase account</p>
+          <p style={{ color: "#8a919e", margin: 0, fontSize: "15px" }}>Sign in to your Conbase account</p>
         </div>
+
+        {/* Demo notice */}
+        <DemoNotice />
 
         {/* Card */}
         <div style={{
