@@ -1,6 +1,7 @@
 // pages/SignUp.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import DemoNotice from "../components/ui/DemoNotice";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -133,6 +134,7 @@ export default function SignUp() {
       padding: "24px",
     }}>
       <div style={{ width: "100%", maxWidth: "460px" }}>
+
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
           <Link to="/">
@@ -151,6 +153,9 @@ export default function SignUp() {
             </>
           )}
         </div>
+
+        {/* Demo notice — only shown on steps 1 and 2 */}
+        {step < 3 && <DemoNotice />}
 
         {/* Progress bar */}
         {step < 3 && (
@@ -284,14 +289,14 @@ export default function SignUp() {
             </div>
             <h2 style={{ fontSize: "28px", fontWeight: 800, margin: "0 0 12px" }}>Account created!</h2>
             <p style={{ color: "#8a919e", fontSize: "16px", margin: "0 0 32px", lineHeight: 1.7 }}>
-              Welcome, {form.firstName}! Your Coinbase account is ready. Start exploring crypto today.
+              Welcome, {form.firstName}! Your Conbase account is ready. Start exploring crypto today.
             </p>
             <button
               className="btn-primary"
               onClick={() => navigate("/")}
               style={{ padding: "16px 40px", fontSize: "16px", borderRadius: "12px" }}
             >
-              Go to Coinbase →
+              Go to Conbase →
             </button>
           </div>
         )}

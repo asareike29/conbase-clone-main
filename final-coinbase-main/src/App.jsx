@@ -2,6 +2,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import WarningBanner from "./components/ui/WarningBanner";
+import FooterDisclaimer from "./components/ui/FooterDisclaimer";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import AssetDetail from "./pages/AssetDetail";
@@ -17,7 +19,11 @@ function Layout() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {/* Global warning — always visible at very top */}
+      <WarningBanner />
+
       <Navbar />
+
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -40,7 +46,16 @@ function Layout() {
           } />
         </Routes>
       </main>
-      {!isAuthRoute && <Footer />}
+
+      {/* Footer: auth pages get the disclaimer only, other pages get both */}
+      {isAuthRoute ? (
+        <FooterDisclaimer />
+      ) : (
+        <>
+          <Footer />
+          <FooterDisclaimer />
+        </>
+      )}
     </div>
   );
 }
