@@ -41,3 +41,8 @@ export const logoutUser = () =>
     method: 'POST',
     credentials: 'include',
   }).then(res => res.json());
+
+  export const getProfile = () =>
+  fetch(`${API}/api/auth/profile`, {
+    credentials: 'include',
+  }).then(res => res.json());

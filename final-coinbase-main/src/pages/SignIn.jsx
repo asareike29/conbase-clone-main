@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DemoNotice from "../components/ui/DemoNotice";
 import { loginUser } from "../api";
+import { useAuth } from "../context/AuthContext";
+
 
 const InputField = ({ label, name, type = "text", placeholder, form, errors, setForm, setErrors, onEnter }) => (
   <div style={{ marginBottom: "20px" }}>
@@ -39,6 +41,7 @@ const InputField = ({ label, name, type = "text", placeholder, form, errors, set
 );
 
 export default function SignIn() {
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -61,6 +64,7 @@ export default function SignIn() {
       try {
         const res = await loginUser({ email: form.email, password: form.password });
         if (res.token || res.user) {
+          SetUser( res.user);
           navigate("/");
         } else {
           setErrors({ email: res.message || "Invalid credentials" });
