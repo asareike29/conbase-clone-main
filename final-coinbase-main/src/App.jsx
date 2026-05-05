@@ -1,5 +1,5 @@
 // App.jsx
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import WarningBanner from "./components/ui/WarningBanner";
@@ -19,11 +19,8 @@ function Layout() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Global warning — always visible at very top */}
       <WarningBanner />
-
       <Navbar />
-
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -46,8 +43,6 @@ function Layout() {
           } />
         </Routes>
       </main>
-
-      {/* Footer: auth pages get the disclaimer only, other pages get both */}
       {isAuthRoute ? (
         <FooterDisclaimer />
       ) : (
@@ -61,9 +56,5 @@ function Layout() {
 }
 
 export default function App() {
-  return (
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
-  );
+  return <Layout />;
 }
