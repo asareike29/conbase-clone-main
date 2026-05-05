@@ -2,6 +2,41 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DemoNotice from "../components/ui/DemoNotice";
+import { loginUser } from "../api";
+
+const InputField = ({ label, name, type = "text", placeholder, form, errors, setForm, setErrors, onEnter }) => (
+  <div style={{ marginBottom: "20px" }}>
+    <label style={{ fontSize: "14px", fontWeight: 600, display: "block", marginBottom: "8px" }}>
+      {label}
+    </label>
+    <input
+      type={type}
+      value={form[name]}
+      onChange={(e) => {
+        setForm((f) => ({ ...f, [name]: e.target.value }));
+        if (errors[name]) setErrors((err) => ({ ...err, [name]: "" }));
+      }}
+      placeholder={placeholder}
+      onKeyDown={(e) => e.key === "Enter" && onEnter()}
+      style={{
+        width: "100%",
+        background: "#1c1d20",
+        border: `1px solid ${errors[name] ? "#f04124" : "rgba(255,255,255,0.1)"}`,
+        borderRadius: "10px",
+        padding: "14px 16px",
+        fontSize: "15px",
+        color: "white",
+        outline: "none",
+        transition: "border-color 0.2s",
+      }}
+      onFocus={(e) => { if (!errors[name]) e.target.style.borderColor = "#0052ff"; }}
+      onBlur={(e) => { if (!errors[name]) e.target.style.borderColor = "rgba(255,255,255,0.1)"; }}
+    />
+    {errors[name] && (
+      <p style={{ color: "#f04124", fontSize: "13px", margin: "6px 0 0" }}>{errors[name]}</p>
+    )}
+  </div>
+);
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -18,106 +53,53 @@ export default function SignIn() {
     return e;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length === 0) {
       setLoading(true);
-      setTimeout(() => {
+      try {
+        const res = await loginUser({ email: form.email, password: form.password });
+        if (res.token || res.user) {
+          navigate("/");
+        } else {
+          setErrors({ email: res.message || "Invalid credentials" });
+        }
+      } catch (err) {
+        setErrors({ email: "Something went wrong. Try again." });
+      } finally {
         setLoading(false);
-        navigate("/");
-      }, 1500);
+      }
     }
   };
 
-  const InputField = ({ label, name, type = "text", placeholder }) => (
-    <div style={{ marginBottom: "20px" }}>
-      <label style={{ fontSize: "14px", fontWeight: 600, display: "block", marginBottom: "8px" }}>
-        {label}
-      </label>
-      <input
-        type={type}
-        value={form[name]}
-        onChange={(e) => {
-          setForm((f) => ({ ...f, [name]: e.target.value }));
-          if (errors[name]) setErrors((err) => ({ ...err, [name]: "" }));
-        }}
-        placeholder={placeholder}
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-        style={{
-          width: "100%",
-          background: "#1c1d20",
-          border: `1px solid ${errors[name] ? "#f04124" : "rgba(255,255,255,0.1)"}`,
-          borderRadius: "10px",
-          padding: "14px 16px",
-          fontSize: "15px",
-          color: "white",
-          outline: "none",
-          transition: "border-color 0.2s",
-        }}
-        onFocus={(e) => { if (!errors[name]) e.target.style.borderColor = "#0052ff"; }}
-        onBlur={(e) => { if (!errors[name]) e.target.style.borderColor = "rgba(255,255,255,0.1)"; }}
-      />
-      {errors[name] && (
-        <p style={{ color: "#f04124", fontSize: "13px", margin: "6px 0 0" }}>{errors[name]}</p>
-      )}
-    </div>
-  );
-
   return (
-    <div style={{
-      background: "#0a0b0d",
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "24px",
-    }}>
+    <div style={{ background: "#0a0b0d", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
       <div style={{ width: "100%", maxWidth: "440px" }}>
-
-        {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
           <Link to="/">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ display: "inline-block" }}>
               <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 18.75a6.75 6.75 0 110-13.5 6.75 6.75 0 010 13.5z" fill="#0052ff"/>
             </svg>
           </Link>
-          <h1 style={{ fontSize: "28px", fontWeight: 800, margin: "16px 0 8px", letterSpacing: "-0.02em" }}>
-            Welcome back
-          </h1>
+          <h1 style={{ fontSize: "28px", fontWeight: 800, margin: "16px 0 8px", letterSpacing: "-0.02em" }}>Welcome back</h1>
           <p style={{ color: "#8a919e", margin: 0, fontSize: "15px" }}>Sign in to your Conbase account</p>
         </div>
 
-        {/* Demo notice */}
         <DemoNotice />
 
-        {/* Card */}
-        <div style={{
-          background: "#111214",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: "20px",
-          padding: "32px",
-        }}>
-          <InputField label="Email address" name="email" type="email" placeholder="you@example.com" />
-          <InputField label="Password" name="password" type="password" placeholder="••••••••" />
+        <div style={{ background: "#111214", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "20px", padding: "32px" }}>
+          <InputField label="Email address" name="email" type="email" placeholder="you@example.com"
+            form={form} errors={errors} setForm={setForm} setErrors={setErrors} onEnter={handleSubmit} />
+          <InputField label="Password" name="password" type="password" placeholder="••••••••"
+            form={form} errors={errors} setForm={setForm} setErrors={setErrors} onEnter={handleSubmit} />
 
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-12px", marginBottom: "24px" }}>
-            <a href="#" style={{ color: "#0052ff", fontSize: "14px", textDecoration: "none", fontWeight: 600 }}>
-              Forgot password?
-            </a>
+            <a href="#" style={{ color: "#0052ff", fontSize: "14px", textDecoration: "none", fontWeight: 600 }}>Forgot password?</a>
           </div>
 
-          <button
-            className="btn-primary"
-            onClick={handleSubmit}
-            disabled={loading}
-            style={{
-              width: "100%", padding: "16px",
-              fontSize: "16px", borderRadius: "12px",
-              opacity: loading ? 0.7 : 1,
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-            }}
-          >
+          <button className="btn-primary" onClick={handleSubmit} disabled={loading}
+            style={{ width: "100%", padding: "16px", fontSize: "16px", borderRadius: "12px", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
             {loading ? (
               <>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
@@ -134,20 +116,9 @@ export default function SignIn() {
             <span style={{ position: "relative", background: "#111214", padding: "0 16px", fontSize: "13px", color: "#8a919e" }}>or</span>
           </div>
 
-          {/* Social */}
-          <button
-            style={{
-              width: "100%", padding: "14px",
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "10px",
-              color: "white", fontSize: "15px", fontWeight: 600,
-              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
-              transition: "all 0.15s",
-            }}
+          <button style={{ width: "100%", padding: "14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", color: "white", fontSize: "15px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", transition: "all 0.15s" }}
             onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
-          >
+            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}>
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -160,15 +131,10 @@ export default function SignIn() {
 
         <p style={{ textAlign: "center", color: "#8a919e", fontSize: "14px", marginTop: "24px" }}>
           Don't have an account?{" "}
-          <Link to="/signup" style={{ color: "#0052ff", fontWeight: 600, textDecoration: "none" }}>
-            Sign up
-          </Link>
+          <Link to="/signup" style={{ color: "#0052ff", fontWeight: 600, textDecoration: "none" }}>Sign up</Link>
         </p>
       </div>
-
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
